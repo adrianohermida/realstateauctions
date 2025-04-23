@@ -256,6 +256,84 @@
 <!-- End Property Grid -->
 
 
+
+<!-- ======= Property Grid ======= 
+<section class="property-grid grid">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="grid-option">
+          <form id="filter-form">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <input type="text" id="filter-keyword" class="form-control" placeholder="Keyword">
+              </div>
+              <div class="col-md-3">
+                <select id="filter-type" class="form-select">
+                  <option value="">All Types</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="filter-city" class="form-select">
+                  <option value="">All Cities</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="filter-state" class="form-select">
+                  <option value="">All States</option>
+                </select>
+              </div>
+              <div class="col-md-3 mt-2">
+                <button type="button" id="clear-filters" class="btn btn-secondary w-100">Clear Filters</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div id="search-summary" class="col-sm-12 mb-3"></div>
+    </div>
+    <div class="row" id="properties-container">
+      <!-- Grid de propriedades será carregado aqui 
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <nav class="pagination-a text-center mt-4">
+          <ul class="pagination justify-content-end" id="pagination"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/loadProperties.js"></script>
+<script>
+  document.documentElement.lang = navigator.language || 'en';
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get("type") || "";
+    const city = urlParams.get("city") || "";
+    const bedrooms = urlParams.get("bedrooms") || "";
+    const garages = urlParams.get("garages") || "";
+    const bathrooms = urlParams.get("bathrooms") || "";
+    const minprice = urlParams.get("minprice") || "";
+    const keyword = urlParams.get("keyword") || "";
+
+    // Aguarda o carregamento do JS principal antes de aplicar os filtros
+    window.applyInitialFilters = () => {
+      if (document.getElementById("filter-type")) {
+        document.getElementById("filter-type").value = type;
+        document.getElementById("filter-city").value = city;
+        document.getElementById("filter-keyword").value = keyword;
+      }
+    };
+  });
+</script>
+<!-- End Property Grid 
+
+
 <!-- ======= Property Grid =======>
 <section class="property-grid grid">
   <div class="container">
