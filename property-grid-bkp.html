@@ -38,7 +38,7 @@
 
   <!-- ======= Property Search Section ======= -->
   <div class="click-closed"></div>
-  <!-- / Form Search Star 
+  <!--/ Form Search Star /-->
   <div class="box-collapse">
     <div class="title-box-d">
       <h3 class="title-d">Search Property</h3>
@@ -130,230 +130,6 @@
     </div>
   </div><!-- End Property Search Section -->>
 
-  <!-- ======= Property Grid ======= -->
-<section class="property-grid grid">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="grid-option">
-          <form id="filter-form">
-            <div class="row g-2 align-items-end">
-              <div class="col-md-3">
-                <select id="filter-type" class="form-select">
-                  <option value="">All Types</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <select id="filter-city" class="form-select">
-                  <option value="">All Cities</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <select id="filter-state" class="form-select">
-                  <option value="">All States</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <button type="button" id="clear-filters" class="btn btn-secondary w-100" data-i18n="clearFilters">Clear Filters</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="row" id="properties-container">
-      <p data-i18n="loading">Loading properties...</p>
-    </div>
-    <div class="row">
-      <div class="col-md-12 text-center mt-4">
-        <button id="load-more" class="btn btn-primary" data-i18n="loadMore">Load More</button>
-      </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col-md-12 text-center">
-        <label for="language-selector">🌐 <span data-i18n="selectLanguage">Select Language</span>:</label>
-        <select id="language-selector" class="form-select d-inline-block w-auto ms-2">
-          <option value="en">English</option>
-          <option value="pt">Português</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="it">Italiano</option>
-          <option value="de">Deutsch</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script src="https://unpkg.com/i18next@21.6.3/dist/umd/i18next.min.js"></script>
-<script src="https://unpkg.com/i18next-browser-languagedetector@6.1.4/i18nextBrowserLanguageDetector.min.js"></script>
-<script src="https://unpkg.com/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const container = document.getElementById("properties-container");
-    const typeFilter = document.getElementById("filter-type");
-    const cityFilter = document.getElementById("filter-city");
-    const stateFilter = document.getElementById("filter-state");
-    const clearBtn = document.getElementById("clear-filters");
-    const loadMoreBtn = document.getElementById("load-more");
-
-    let allProperties = [];
-    let filteredProperties = [];
-    let displayIndex = 0;
-    const itemsPerPage = 6;
-
-    function populateFilters(data) {
-      const types = [...new Set(data.map(p => p.type).filter(Boolean))];
-      const cities = [...new Set(data.map(p => p.city).filter(Boolean))];
-      const states = [...new Set(data.map(p => p.state).filter(Boolean))];
-
-      types.forEach(type => {
-        const opt = document.createElement("option");
-        opt.value = type;
-        opt.textContent = type;
-        typeFilter.appendChild(opt);
-      });
-
-      cities.forEach(city => {
-        const opt = document.createElement("option");
-        opt.value = city;
-        opt.textContent = city;
-        cityFilter.appendChild(opt);
-      });
-
-      states.forEach(state => {
-        const opt = document.createElement("option");
-        opt.value = state;
-        opt.textContent = state;
-        stateFilter.appendChild(opt);
-      });
-    }
-
-    function renderProperties(reset = false) {
-      if (reset) {
-        container.innerHTML = "";
-        displayIndex = 0;
-      }
-      const propertiesToDisplay = filteredProperties.slice(displayIndex, displayIndex + itemsPerPage);
-      displayIndex += itemsPerPage;
-
-      propertiesToDisplay.forEach(property => {
-        const card = document.createElement("div");
-        card.className = "col-md-4 mb-4";
-
-        card.innerHTML = `
-          <div class="card-box-a card-shadow">
-            <div class="img-box-a">
-              <img src="${property.image}" alt="${property.title}" class="img-a img-fluid">
-            </div>
-            <div class="card-overlay">
-              <div class="card-overlay-a-content">
-                <div class="card-header-a">
-                  <h2 class="card-title-a">
-                    <a href="/property-single.html?id=${property.id}">
-                      ${property.title.replace(" - ", "<br/>")}
-                    </a>
-                  </h2>
-                </div>
-                <div class="card-body-a">
-                  <div class="price-box d-flex">
-                    <span class="price-a">R$ ${property.valuation.toLocaleString('pt-BR')}</span>
-                  </div>
-                  <a href="/property-single.html?id=${property.id}" class="link-a" data-i18n="clickToView">
-                    Click here to view <span class="bi bi-chevron-right"></span>
-                  </a>
-                </div>
-                <div class="card-footer-a">
-                  <ul class="card-info d-flex justify-content-around">
-                    <li><h4 class="card-info-title">City</h4><span>${property.city}</span></li>
-                    <li><h4 class="card-info-title">State</h4><span>${property.state}</span></li>
-                    <li><h4 class="card-info-title">Type</h4><span>${property.type || "N/A"}</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>`;
-
-        container.appendChild(card);
-      });
-
-      if (displayIndex >= filteredProperties.length) {
-        loadMoreBtn.style.display = "none";
-      } else {
-        loadMoreBtn.style.display = "block";
-      }
-    }
-
-    function filterProperties() {
-      const type = typeFilter.value;
-      const city = cityFilter.value;
-      const state = stateFilter.value;
-
-      filteredProperties = allProperties.filter(p => {
-        return (!type || p.type === type) &&
-               (!city || p.city === city) &&
-               (!state || p.state === state);
-      });
-    }
-
-    function applyFilters() {
-      filterProperties();
-      renderProperties(true);
-    }
-
-    clearBtn.addEventListener("click", () => {
-      typeFilter.value = "";
-      cityFilter.value = "";
-      stateFilter.value = "";
-      applyFilters();
-    });
-
-    loadMoreBtn.addEventListener("click", () => {
-      renderProperties(false);
-    });
-
-    fetch("/data/properties.json")
-      .then(res => res.json())
-      .then(data => {
-        allProperties = data;
-        populateFilters(data);
-        applyFilters();
-
-        typeFilter.addEventListener("change", applyFilters);
-        cityFilter.addEventListener("change", applyFilters);
-        stateFilter.addEventListener("change", applyFilters);
-      });
-
-    i18next.use(i18nextBrowserLanguageDetector).init({
-      fallbackLng: 'en',
-      debug: false,
-      resources: {
-        en: { translation: { clearFilters: "Clear Filters", loadMore: "Load More", loading: "Loading properties...", clickToView: "Click here to view", selectLanguage: "Select Language" } },
-        pt: { translation: { clearFilters: "Limpar Filtros", loadMore: "Carregar Mais", loading: "Carregando imóveis...", clickToView: "Clique para visualizar", selectLanguage: "Selecionar Idioma" } },
-        es: { translation: { clearFilters: "Borrar filtros", loadMore: "Cargar más", loading: "Cargando propiedades...", clickToView: "Haz clic para ver", selectLanguage: "Seleccionar idioma" } },
-        fr: { translation: { clearFilters: "Effacer les filtres", loadMore: "Charger plus", loading: "Chargement des propriétés...", clickToView: "Cliquez pour voir", selectLanguage: "Choisir la langue" } },
-        it: { translation: { clearFilters: "Cancella filtri", loadMore: "Carica altri", loading: "Caricamento proprietà...", clickToView: "Clicca per visualizzare", selectLanguage: "Seleziona lingua" } },
-        de: { translation: { clearFilters: "Filter löschen", loadMore: "Mehr laden", loading: "Immobilien werden geladen...", clickToView: "Klicken Sie hier, um anzuzeigen", selectLanguage: "Sprache wählen" } }
-      }
-    }, function(err, t) {
-      updateContent();
-    });
-
-    function updateContent() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        el.innerHTML = i18next.t(key);
-      });
-    }
-
-    document.getElementById("language-selector").addEventListener("change", function () {
-      const newLang = this.value;
-      i18next.changeLanguage(newLang, updateContent);
-    });
-  });
-</script>
-
   <!-- ======= Header/Navbar ======= -->
   <nav class="navbar navbar-default navbar-trans navbar-expand-lg fixed-top">
     <div class="container">
@@ -423,10 +199,6 @@
         </div>
       </div>
     </section><!-- End Intro Single-->
-
-    <div class="row" id="properties-container">
-  <p>Loading properties...</p>
-</div>
 
     <!-- ======= Property Grid ======= -->
     <section class="property-grid grid">
@@ -922,7 +694,6 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
-  <script src="/assets/js/loadProperties.js"></script>
 
 </body>
 

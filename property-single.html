@@ -180,8 +180,8 @@
         <div class="row">
           <div class="col-md-12 col-lg-8">
             <div class="title-single-box">
-              <h1 class="title-single">304 Blaster Up</h1>
-              <span class="color-text-a">Chicago, IL 606543</span>
+              <h1 class="title-single" id="property-title">Loading...</h1>
+              <span class="color-text-a" id="property-location"></span>
             </div>
           </div>
           <div class="col-md-12 col-lg-4">
@@ -233,7 +233,7 @@
                       <span class="bi bi-cash">$</span>
                     </div>
                     <div class="card-title-c align-self-center">
-                      <h5 class="title-c">15000</h5>
+                      <h5 class="title-c"><span id="property-valuation">R$ 0,00</span></h5>
                     </div>
                   </div>
                 </div>
@@ -249,39 +249,21 @@
                     <ul class="list">
                       <li class="d-flex justify-content-between">
                         <strong>Property ID:</strong>
-                        <span>1134</span>
+                        <span id="property-id">----</span>
                       </li>
                       <li class="d-flex justify-content-between">
                         <strong>Location:</strong>
-                        <span>Chicago, IL 606543</span>
+                        <span id="property-location-summary">----</span>
                       </li>
                       <li class="d-flex justify-content-between">
                         <strong>Property Type:</strong>
-                        <span>House</span>
+                        <span id="property-type">----</span>
                       </li>
                       <li class="d-flex justify-content-between">
                         <strong>Status:</strong>
-                        <span>Sale</span>
+                        <span id="property-status">----</span>
                       </li>
-                      <li class="d-flex justify-content-between">
-                        <strong>Area:</strong>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li class="d-flex justify-content-between">
-                        <strong>Beds:</strong>
-                        <span>4</span>
-                      </li>
-                      <li class="d-flex justify-content-between">
-                        <strong>Baths:</strong>
-                        <span>2</span>
-                      </li>
-                      <li class="d-flex justify-content-between">
-                        <strong>Garage:</strong>
-                        <span>1</span>
-                      </li>
-                    </ul>
+                    </ul>                    
                   </div>
                 </div>
               </div>
@@ -294,13 +276,9 @@
                   </div>
                 </div>
                 <div class="property-description">
-                  <p class="description color-text-a">
-                    Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit
-                    neque, auctor sit amet
-                    aliquam vel, ullamcorper sit amet ligula. Cras ultricies ligula sed magna dictum porta.
-                    Curabitur aliquet quam id dui posuere blandit. Mauris blandit aliquet elit, eget tincidunt
-                    nibh pulvinar quam id dui posuere blandit.
-                  </p>
+<p id="property-description" class="description color-text-a">
+    Loading description...
+  </p>
                   <p class="description color-text-a no-margin">
                     Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Donec rutrum congue leo eget
                     malesuada. Quisque velit nisi,
@@ -616,6 +594,44 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  const propertyId = params.get("id");
+
+  fetch("/data/properties.json")
+    .then(response => response.json())
+    .then(data => {
+      const property = data.find(p => p.id === propertyId);
+      if (!property) {
+        document.querySelector("main").innerHTML = "<div class='container'><p>Property not found.</p></div>";
+        return;
+      }
+
+      // Preenche os elementos com os dados
+      document.getElementById("property-title").textContent = property.title;
+      document.getElementById("property-location").textContent = property.location;
+      document.getElementById("property-id").textContent = property.id;
+      document.getElementById("property-location-summary").textContent = property.location;
+      document.getElementById("property-type").textContent = property.type || "N/A";
+      document.getElementById("property-status").textContent = property.status;
+      document.getElementById("property-description").textContent = property.description;
+      document.getElementById("property-valuation").textContent = property.valuation.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      // Atualiza imagem principal do imóvel
+      const imageElement = document.querySelector("#property-single-carousel img");
+      if (imageElement && property.image) {
+        imageElement.src = property.image;
+        imageElement.alt = property.title;
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao carregar propriedade:", error);
+      document.querySelector("main").innerHTML = "<div class='container'><p>Erro ao carregar os dados do imóvel.</p></div>";
+    });
+});
+</script>
 
 </body>
 
