@@ -1,0 +1,51 @@
+[
+    {
+      "id": "11324141",
+      "title": "Property in Manaus - 11324141",
+      "location": "Rua Dona Sulamita, 40, Nossa Senhora das Graças, Manaus/AM. CEP 69057-230",
+      "valuation": 700000.0,
+      "status": "Disponível",
+      "city": "Manaus",
+      "state": "AM",
+      "description": "Located at Rua Dona Sulamita, 40, Nossa Senhora das Graças, Manaus/AM. CEP 69057-230, in Manaus - AM.",
+      "image": "/assets/img/properties/11324141.jpg",
+      "details_url": "/property-single.html?id=11324141"
+    },
+    {
+      "id": "11324143",
+      "title": "Property in Manacapuru - 11324143",
+      "location": "Margem esquerda do Rio Manacapuru, Município de Manacapuru.",
+      "valuation": 10920000.0,
+      "status": "Disponível",
+      "city": "Manacapuru",
+      "state": "AM",
+      "description": "Located at Margem esquerda do Rio Manacapuru, Município de Manacapuru., in Manacapuru - AM.",
+      "image": "/assets/img/properties/11324143.jpg",
+      "details_url": "/property-single.html?id=11324143"
+    },
+    {
+      "id": "11324145",
+      "title": "Property in Manaus - 11324145",
+      "location": "R. Ramiro Santos, 3 - Tarumã Manaus - AM 69022-107",
+      "valuation": 500000.0,
+      "status": "Disponível",
+      "city": "Manaus",
+      "state": "AM",
+      "description": "Located at R. Ramiro Santos, 3 - Tarumã Manaus - AM 69022-107, in Manaus - AM.",
+      "image": "/assets/img/properties/11324145.jpg",
+      "details_url": "/property-single.html?id=11324145"
+    },
+    {
+      "id": "11324146",
+      "title": "Property in Manaus - 11324146",
+      "location": "Rua 01, do Loteamento Residencial PARQUE LUSITANO...o no Ramal do Luso, à margem esquerda da Rodovia BR-174, KM 02",
+      "valuation": 60000.0,
+      "status": "Disponível",
+      "city": "Manaus",
+      "state": "AM",
+      "description": "Located at Rua 01, do Loteamento Residencial PARQUE LUSITANO...o no Ramal do Luso, à margem esquerda da Rodovia BR-174, KM 02, in Manaus - AM.",
+      "image": "/assets/img/properties/11324146.jpg",
+      "details_url": "/property-single.html?id=11324146"
+    }
+  ]
+  
