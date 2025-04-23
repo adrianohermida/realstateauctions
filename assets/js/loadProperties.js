@@ -1,5 +1,19 @@
 // loadProperties.js
 
+function getURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    keyword: params.get("keyword") || "",
+    type: params.get("type") || "",
+    city: params.get("city") || "",
+    state: params.get("state") || "",
+    bedrooms: params.get("bedrooms") || "",
+    bathrooms: params.get("bathrooms") || "",
+    garages: params.get("garages") || "",
+    price: params.get("price") || ""
+  };
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("properties-container");
   const typeFilter = document.getElementById("filter-type");
@@ -8,11 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const keywordFilter = document.getElementById("filter-keyword");
   const clearBtn = document.getElementById("clear-filters");
   const pagination = document.getElementById("pagination");
-  const summary = document.getElementById("search-summary");
 
   let allProperties = [];
   let filteredProperties = [];
-  let currentPage = 1;
+  let currentPage = 0;
   const itemsPerPage = 6;
 
   function populateFilters(data) {
@@ -20,51 +33,60 @@ document.addEventListener("DOMContentLoaded", function () {
     const cities = [...new Set(data.map(p => p.city).filter(Boolean).sort())];
     const states = [...new Set(data.map(p => p.state).filter(Boolean).sort())];
 
-    typeFilter.innerHTML = '<option value="">All Types</option>';
-    cityFilter.innerHTML = '<option value="">All Cities</option>';
-    stateFilter.innerHTML = '<option value="">All States</option>';
+    typeFilter.innerHTML = `<option value="">All Types</option>`;
+    types.forEach(type => {
+      typeFilter.innerHTML += `<option value="${type}">${type}</option>`;
+    });
 
-    types.forEach(val => typeFilter.innerHTML += `<option value="${val}">${val}</option>`);
-    cities.forEach(val => cityFilter.innerHTML += `<option value="${val}">${val}</option>`);
-    states.forEach(val => stateFilter.innerHTML += `<option value="${val}">${val}</option>`);
+    cityFilter.innerHTML = `<option value="">All Cities</option>`;
+    cities.forEach(city => {
+      cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
+    });
+
+    stateFilter.innerHTML = `<option value="">All States</option>`;
+    states.forEach(state => {
+      stateFilter.innerHTML += `<option value="${state}">${state}</option>`;
+    });
   }
 
-  function renderProperties(page = 1) {
+  function renderProperties(page = 0) {
     container.innerHTML = "";
     currentPage = page;
-    const start = (page - 1) * itemsPerPage;
+    const start = page * itemsPerPage;
     const end = start + itemsPerPage;
     const propertiesToDisplay = filteredProperties.slice(start, end);
 
-    propertiesToDisplay.forEach(p => {
+    propertiesToDisplay.forEach(property => {
       const card = document.createElement("div");
       card.className = "col-md-4 mb-4";
       card.innerHTML = `
         <div class="card-box-a card-shadow">
           <div class="img-box-a">
-            <img src="${p.image || 'assets/img/property-1.jpg'}" alt="${p.title}" class="img-a img-fluid">
+            <img src="${property.images?.[0] || '/assets/img/no-image.jpg'}" alt="${property.title}" class="img-a img-fluid">
           </div>
           <div class="card-overlay">
             <div class="card-overlay-a-content">
               <div class="card-header-a">
                 <h2 class="card-title-a">
-                  <a href="property-single.html?id=${p.id}">
-                    ${p.title.replace(" - ", "<br />")}
+                  <a href="/property-single.html?id=${property.id}">
+                    ${property.title.replace(" - ", "<br/>")}
                   </a>
                 </h2>
               </div>
               <div class="card-body-a">
                 <div class="price-box d-flex">
-                  <span class="price-a">R$ ${p.valuation?.toLocaleString('pt-BR') || '-'}</span>
+                  <span class="price-a">R$ ${Number(property.minimumBid).toLocaleString('pt-BR')}</span>
                 </div>
-                <a href="property-single.html?id=${p.id}" class="link-a">Click here to view <span class="bi bi-chevron-right"></span></a>
+                <a href="/property-single.html?id=${property.id}" class="link-a">
+                  Click here to view <span class="bi bi-chevron-right"></span>
+                </a>
               </div>
               <div class="card-footer-a">
                 <ul class="card-info d-flex justify-content-around">
-                  <li><h4 class="card-info-title">Area</h4><span>${p.area || '-'}<sup>2</sup></span></li>
-                  <li><h4 class="card-info-title">Beds</h4><span>${p.bedrooms || '-'}</span></li>
-                  <li><h4 class="card-info-title">Baths</h4><span>${p.bathrooms || '-'}</span></li>
-                  <li><h4 class="card-info-title">Garages</h4><span>${p.garages || '-'}</span></li>
+                  <li><h4 class="card-info-title">Area</h4><span>${property.area || "-"}</span></li>
+                  <li><h4 class="card-info-title">Beds</h4><span>${property.bedrooms || "-"}</span></li>
+                  <li><h4 class="card-info-title">Baths</h4><span>${property.bathrooms || "-"}</span></li>
+                  <li><h4 class="card-info-title">Garages</h4><span>${property.garages || "-"}</span></li>
                 </ul>
               </div>
             </div>
@@ -74,34 +96,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderPagination();
-    summary.innerHTML = keywordFilter.value ? `<small>Search results for: <strong>${keywordFilter.value}</strong></small>` : "";
   }
 
   function renderPagination() {
-    pagination.innerHTML = "";
     const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+    pagination.innerHTML = "";
     for (let i = 1; i <= totalPages; i++) {
       const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.className = `page-item ${i === currentPage + 1 ? "active" : ""}`;
       li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
       li.addEventListener("click", e => {
         e.preventDefault();
-        renderProperties(i);
+        renderProperties(i - 1);
       });
       pagination.appendChild(li);
     }
   }
 
-  function filterProperties() {
-    const type = typeFilter.value;
-    const city = cityFilter.value;
-    const state = stateFilter.value;
-    const keyword = keywordFilter.value.toLowerCase();
-
+  function filterProperties(filters) {
+    const { keyword, type, city, state } = filters;
     filteredProperties = allProperties.filter(p => {
       const matchKeyword = keyword ? (
-        (p.title && p.title.toLowerCase().includes(keyword)) ||
-        (p.description && p.description.toLowerCase().includes(keyword))
+        (p.title && p.title.toLowerCase().includes(keyword.toLowerCase())) ||
+        (p.description && p.description.toLowerCase().includes(keyword.toLowerCase()))
       ) : true;
 
       return (!type || p.type === type) &&
@@ -111,17 +128,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function applyFilters() {
-    filterProperties();
-    renderProperties(1);
+  function applyFiltersFromParams() {
+    const filters = getURLParams();
+    if (typeFilter) typeFilter.value = filters.type;
+    if (cityFilter) cityFilter.value = filters.city;
+    if (stateFilter) stateFilter.value = filters.state;
+    if (keywordFilter) keywordFilter.value = filters.keyword;
+    filterProperties(filters);
+    renderProperties(0);
   }
 
-  clearBtn.addEventListener("click", () => {
+  clearBtn?.addEventListener("click", () => {
     typeFilter.value = "";
     cityFilter.value = "";
     stateFilter.value = "";
     keywordFilter.value = "";
-    applyFilters();
+    filterProperties({});
+    renderProperties(0);
   });
 
   const jsonFiles = [
