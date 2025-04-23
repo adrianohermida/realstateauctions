@@ -1,4 +1,3 @@
-// Aguarda o carregamento completo da DOM
 window.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("properties-container");
   const pagination = document.getElementById("pagination");
@@ -35,9 +34,9 @@ window.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = "";
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const display = filteredProperties.slice(start, end);
+    const pageItems = filteredProperties.slice(start, end);
 
-    display.forEach(property => {
+    pageItems.forEach(property => {
       const card = document.createElement("div");
       card.className = "col-md-4 mb-4";
       card.innerHTML = `
@@ -80,9 +79,8 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPagination() {
-    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     pagination.innerHTML = "";
-
+    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     for (let i = 1; i <= totalPages; i++) {
       const li = document.createElement("li");
       li.className = `page-item ${i === currentPage ? "active" : ""}`;
@@ -103,27 +101,28 @@ window.addEventListener("DOMContentLoaded", () => {
     const keyword = keywordFilter.value.toLowerCase();
 
     filteredProperties = allProperties.filter(p => {
-      const matchKeyword = keyword ? (
-        (p.title && p.title.toLowerCase().includes(keyword)) ||
-        (p.description && p.description.toLowerCase().includes(keyword))
-      ) : true;
-
+      const matchesKeyword = keyword
+        ? (p.title?.toLowerCase().includes(keyword) || p.description?.toLowerCase().includes(keyword))
+        : true;
       return (!type || p.type === type) &&
              (!city || p.city === city) &&
              (!state || p.state === state) &&
-             matchKeyword;
+             matchesKeyword;
     });
 
-    currentPage = 1;
+    summary.innerHTML = keyword ? `<p class="text-muted">Results for: <strong>${keyword}</strong></p>` : "";
   }
 
   function applyFilters() {
     filterProperties();
+    currentPage = 1;
     renderProperties();
   }
 
-  clearBtn.addEventListener("click", () => {
-    [typeFilter, cityFilter, stateFilter].forEach(el => el.value = "");
+  clearBtn?.addEventListener("click", () => {
+    typeFilter.value = "";
+    cityFilter.value = "";
+    stateFilter.value = "";
     keywordFilter.value = "";
     applyFilters();
   });
@@ -134,8 +133,9 @@ window.addEventListener("DOMContentLoaded", () => {
       allProperties = data;
       populateFilters(data);
       applyFilters();
-
-      [typeFilter, cityFilter, stateFilter].forEach(el => el.addEventListener("change", applyFilters));
+      typeFilter.addEventListener("change", applyFilters);
+      cityFilter.addEventListener("change", applyFilters);
+      stateFilter.addEventListener("change", applyFilters);
       keywordFilter.addEventListener("input", applyFilters);
     });
 });
