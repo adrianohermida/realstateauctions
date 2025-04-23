@@ -1120,7 +1120,26 @@
     let currentPage = 0;
     const itemsPerPage = 5;
 
-    function populateFilters(data) {
+function populateFilters(data) {
+  const types = [...new Set(data.map(p => p.type).filter(Boolean).sort())];
+  const cities = [...new Set(data.map(p => p.city).filter(Boolean).sort())];
+  const states = [...new Set(data.map(p => p.state).filter(Boolean).sort())];
+
+  typeFilter.innerHTML = `<option value="">All Types</option>`;
+  types.forEach(type => {
+    typeFilter.innerHTML += `<option value="${type}">${type}</option>`;
+  });
+
+  cityFilter.innerHTML = `<option value="">All Cities</option>`;
+  cities.forEach(city => {
+    cityFilter.innerHTML += `<option value="${city}">${city}</option>`;
+  });
+
+  stateFilter.innerHTML = `<option value="">All States</option>`;
+  states.forEach(state => {
+    stateFilter.innerHTML += `<option value="${state}">${state}</option>`;
+  });
+}    function populateFilters(data) {
       const types = [...new Set(data.map(p => p.type).filter(Boolean))];
       const cities = [...new Set(data.map(p => p.city).filter(Boolean))];
       const states = [...new Set(data.map(p => p.state).filter(Boolean))];
@@ -1269,24 +1288,30 @@
         const prices = [...new Set(data.map(p => p.valuation).filter(Boolean))].sort((a, b) => a - b);
 
         // Helper para preencher <select>
-        function populateSelect(select, values, defaultOption) {
-          select.innerHTML = `<option>${defaultOption}</option>`;
-          values.forEach(val => {
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = typeof val === "number" ? `R$ ${val.toLocaleString('pt-BR')}` : val;
-            select.appendChild(opt);
-          });
-        }
+function populateSelect(select, values, defaultOption, isCurrency = false) {
+  select.innerHTML = `<option>${defaultOption}</option>`;
+  values.forEach(val => {
+    const opt = document.createElement("option");
+    opt.value = val;
+    opt.textContent = isCurrency
+      ? `R$ ${val.toLocaleString('pt-BR')}`
+      : val;
+    select.appendChild(opt);
+  });
+}
 
         populateSelect(typeSelect, types, "All Type");
         populateSelect(citySelect, cities, "All City");
         populateSelect(bedroomsSelect, bedrooms, "Any");
         populateSelect(garagesSelect, garages, "Any");
         populateSelect(bathroomsSelect, bathrooms, "Any");
-        populateSelect(priceSelect, prices, "Unlimite");
+        populateSelect(priceSelect, prices, "Unlimite", true);
       });
   });
+
+  const prices = [...new Set(data.map(p => p.valuation).filter(v => typeof v === "number" && v > 0))].sort((a, b) => a - b);
+populateSelect(priceSelect, prices, "Unlimite", true);
+
 </script>
 
 </body>
