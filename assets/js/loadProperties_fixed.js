@@ -83,12 +83,22 @@ document.addEventListener("DOMContentLoaded", function () {
     renderPagination();
   }
 
-  function renderPagination() {
-    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-    pagination.innerHTML = "";
-    for (let i = 1; i <= totalPages; i++) {
-      const li = document.createElement("li");
-      li.className = \`page-item \${i === currentPage + 1 ? "active" : ""}\`;
+  
+function renderPagination() {
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  pagination.innerHTML = "";
+  for (let i = 0; i < totalPages; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === currentPage ? "active" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+    li.addEventListener("click", e => {
+      e.preventDefault();
+      renderProperties(i);
+    });
+    pagination.appendChild(li);
+  }
+}
+\`;
       li.innerHTML = \`<a class="page-link" href="#">\${i}</a>\`;
       li.addEventListener("click", e => {
         e.preventDefault();
