@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
       card.innerHTML = `
         <div class="card-box-a card-shadow">
           <div class="img-box-a">
-            <img src="${p.image || 'assets/img/default.jpg'}" alt="${p.title}" class="img-a img-fluid">
+            <img src="${p.image || 'assets/img/property-1.jpg'}" alt="${p.title}" class="img-a img-fluid">
           </div>
           <div class="card-overlay">
             <div class="card-overlay-a-content">
@@ -124,15 +124,24 @@ document.addEventListener("DOMContentLoaded", function () {
     applyFilters();
   });
 
-  fetch("/data/properties.json")
-    .then(res => res.json())
-    .then(data => {
-      allProperties = data;
-      populateFilters(data);
-      applyFilters();
-      typeFilter.addEventListener("change", applyFilters);
-      cityFilter.addEventListener("change", applyFilters);
-      stateFilter.addEventListener("change", applyFilters);
-      keywordFilter.addEventListener("input", applyFilters);
-    });
-});
+  const jsonFiles = [
+    "/data/property_1_to_50.json",
+    "/data/property_51_to_100.json",
+    "/data/property_101_to_150.json",
+    "/data/property_151_to_200.json"
+  ];
+  
+  Promise.all(
+    jsonFiles.map(file => fetch(file).then(res => res.json()))
+  ).then(jsonArrays => {
+    allProperties = jsonArrays.flat();
+  
+    populateFilters(allProperties);
+    applyFilters();
+  
+    typeFilter.addEventListener("change", applyFilters);
+    cityFilter.addEventListener("change", applyFilters);
+    stateFilter.addEventListener("change", applyFilters);
+    keywordFilter.addEventListener("input", applyFilters);
+  });
+  
