@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const keywordFilter = document.getElementById("filter-keyword");
   const clearBtn = document.getElementById("clear-filters");
   const pagination = document.getElementById("pagination");
+  const summary = document.getElementById("search-summary");
 
   let allProperties = [];
   let filteredProperties = [];
@@ -19,13 +20,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const cities = [...new Set(data.map(p => p.city).filter(Boolean).sort())];
     const states = [...new Set(data.map(p => p.state).filter(Boolean).sort())];
 
-    typeFilter.innerHTML = `<option value="">All Types</option>`;
-    cityFilter.innerHTML = `<option value="">All Cities</option>`;
-    stateFilter.innerHTML = `<option value="">All States</option>`;
+    typeFilter.innerHTML = '<option value="">All Types</option>';
+    cityFilter.innerHTML = '<option value="">All Cities</option>';
+    stateFilter.innerHTML = '<option value="">All States</option>';
 
-    types.forEach(type => typeFilter.innerHTML += `<option value="${type}">${type}</option>`);
-    cities.forEach(city => cityFilter.innerHTML += `<option value="${city}">${city}</option>`);
-    states.forEach(state => stateFilter.innerHTML += `<option value="${state}">${state}</option>`);
+    types.forEach(val => typeFilter.innerHTML += `<option value="${val}">${val}</option>`);
+    cities.forEach(val => cityFilter.innerHTML += `<option value="${val}">${val}</option>`);
+    states.forEach(val => stateFilter.innerHTML += `<option value="${val}">${val}</option>`);
   }
 
   function renderProperties(page = 1) {
@@ -35,43 +36,35 @@ document.addEventListener("DOMContentLoaded", function () {
     const end = start + itemsPerPage;
     const propertiesToDisplay = filteredProperties.slice(start, end);
 
-    if (propertiesToDisplay.length === 0) {
-      container.innerHTML = '<p class="text-center">No properties found.</p>';
-      pagination.innerHTML = "";
-      return;
-    }
-
-    propertiesToDisplay.forEach(property => {
+    propertiesToDisplay.forEach(p => {
       const card = document.createElement("div");
       card.className = "col-md-4 mb-4";
       card.innerHTML = `
         <div class="card-box-a card-shadow">
           <div class="img-box-a">
-            <img src="${property.image}" alt="${property.title}" class="img-a img-fluid">
+            <img src="${p.image || 'assets/img/default.jpg'}" alt="${p.title}" class="img-a img-fluid">
           </div>
           <div class="card-overlay">
             <div class="card-overlay-a-content">
               <div class="card-header-a">
                 <h2 class="card-title-a">
-                  <a href="/property-single.html?id=${property.id}">
-                    ${property.title.replace(" - ", "<br />")}
+                  <a href="property-single.html?id=${p.id}">
+                    ${p.title.replace(" - ", "<br />")}
                   </a>
                 </h2>
               </div>
               <div class="card-body-a">
                 <div class="price-box d-flex">
-                  <span class="price-a">R$ ${property.valuation?.toLocaleString("pt-BR") || "-"}</span>
+                  <span class="price-a">R$ ${p.valuation?.toLocaleString('pt-BR') || '-'}</span>
                 </div>
-                <a href="/property-single.html?id=${property.id}" class="link-a">
-                  Click here to view <span class="bi bi-chevron-right"></span>
-                </a>
+                <a href="property-single.html?id=${p.id}" class="link-a">Click here to view <span class="bi bi-chevron-right"></span></a>
               </div>
               <div class="card-footer-a">
                 <ul class="card-info d-flex justify-content-around">
-                  <li><h4 class="card-info-title">Area</h4><span>${property.area || "-"}<sup>2</sup></span></li>
-                  <li><h4 class="card-info-title">Beds</h4><span>${property.bedrooms || "-"}</span></li>
-                  <li><h4 class="card-info-title">Baths</h4><span>${property.bathrooms || "-"}</span></li>
-                  <li><h4 class="card-info-title">Garages</h4><span>${property.garages || "-"}</span></li>
+                  <li><h4 class="card-info-title">Area</h4><span>${p.area || '-'}<sup>2</sup></span></li>
+                  <li><h4 class="card-info-title">Beds</h4><span>${p.bedrooms || '-'}</span></li>
+                  <li><h4 class="card-info-title">Baths</h4><span>${p.bathrooms || '-'}</span></li>
+                  <li><h4 class="card-info-title">Garages</h4><span>${p.garages || '-'}</span></li>
                 </ul>
               </div>
             </div>
@@ -81,14 +74,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderPagination();
+    summary.innerHTML = keywordFilter.value ? `<small>Search results for: <strong>${keywordFilter.value}</strong></small>` : "";
   }
 
   function renderPagination() {
-    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     pagination.innerHTML = "";
+    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     for (let i = 1; i <= totalPages; i++) {
       const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? "active" : ""}`;
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
       li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
       li.addEventListener("click", e => {
         e.preventDefault();
@@ -122,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     renderProperties(1);
   }
 
-  clearBtn?.addEventListener("click", () => {
+  clearBtn.addEventListener("click", () => {
     typeFilter.value = "";
     cityFilter.value = "";
     stateFilter.value = "";
@@ -136,7 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
       allProperties = data;
       populateFilters(data);
       applyFilters();
-
       typeFilter.addEventListener("change", applyFilters);
       cityFilter.addEventListener("change", applyFilters);
       stateFilter.addEventListener("change", applyFilters);
