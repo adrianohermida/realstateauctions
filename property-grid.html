@@ -38,7 +38,7 @@
 
   <!-- ======= Property Search Section ======= -->
   <div class="click-closed"></div>
-  <!-- / Form Search Star 
+  <-- / Form Search Star 
   <div class="box-collapse">
     <div class="title-box-d">
       <h3 class="title-d">Search Property</h3>
@@ -130,7 +130,7 @@
     </div>
   </div><!-- End Property Search Section -->>
 
-  <!-- ======= Property Grid ======= -->
+<!-- ======= Property Grid ======= -->
 <section class="property-grid grid">
   <div class="container">
     <div class="row">
@@ -154,40 +154,21 @@
                 </select>
               </div>
               <div class="col-md-3">
-                <button type="button" id="clear-filters" class="btn btn-secondary w-100" data-i18n="clearFilters">Clear Filters</button>
+                <button type="button" id="clear-filters" class="btn btn-secondary w-100">Clear Filters</button>
               </div>
             </div>
           </form>
         </div>
       </div>
     </div>
-    <div class="row" id="properties-container">
-      <p data-i18n="loading">Loading properties...</p>
-    </div>
+    <div class="row" id="properties-container"></div>
     <div class="row">
       <div class="col-md-12 text-center mt-4">
-        <button id="load-more" class="btn btn-primary" data-i18n="loadMore">Load More</button>
-      </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col-md-12 text-center">
-        <label for="language-selector">🌐 <span data-i18n="selectLanguage">Select Language</span>:</label>
-        <select id="language-selector" class="form-select d-inline-block w-auto ms-2">
-          <option value="en">English</option>
-          <option value="pt">Português</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="it">Italiano</option>
-          <option value="de">Deutsch</option>
-        </select>
+        <button id="load-more" class="btn btn-primary" style="display: none">Load More</button>
       </div>
     </div>
   </div>
 </section>
-
-<script src="https://unpkg.com/i18next@21.6.3/dist/umd/i18next.min.js"></script>
-<script src="https://unpkg.com/i18next-browser-languagedetector@6.1.4/i18nextBrowserLanguageDetector.min.js"></script>
-<script src="https://unpkg.com/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -197,6 +178,8 @@
     const stateFilter = document.getElementById("filter-state");
     const clearBtn = document.getElementById("clear-filters");
     const loadMoreBtn = document.getElementById("load-more");
+
+    if (!container) return; // Garantia de que o grid só carrega onde deve
 
     let allProperties = [];
     let filteredProperties = [];
@@ -260,7 +243,7 @@
                   <div class="price-box d-flex">
                     <span class="price-a">R$ ${property.valuation.toLocaleString('pt-BR')}</span>
                   </div>
-                  <a href="/property-single.html?id=${property.id}" class="link-a" data-i18n="clickToView">
+                  <a href="/property-single.html?id=${property.id}" class="link-a">
                     Click here to view <span class="bi bi-chevron-right"></span>
                   </a>
                 </div>
@@ -278,11 +261,7 @@
         container.appendChild(card);
       });
 
-      if (displayIndex >= filteredProperties.length) {
-        loadMoreBtn.style.display = "none";
-      } else {
-        loadMoreBtn.style.display = "block";
-      }
+      loadMoreBtn.style.display = (displayIndex >= filteredProperties.length) ? "none" : "block";
     }
 
     function filterProperties() {
@@ -302,14 +281,14 @@
       renderProperties(true);
     }
 
-    clearBtn.addEventListener("click", () => {
+    clearBtn?.addEventListener("click", () => {
       typeFilter.value = "";
       cityFilter.value = "";
       stateFilter.value = "";
       applyFilters();
     });
 
-    loadMoreBtn.addEventListener("click", () => {
+    loadMoreBtn?.addEventListener("click", () => {
       renderProperties(false);
     });
 
@@ -325,34 +304,11 @@
         stateFilter.addEventListener("change", applyFilters);
       });
 
-    i18next.use(i18nextBrowserLanguageDetector).init({
-      fallbackLng: 'en',
-      debug: false,
-      resources: {
-        en: { translation: { clearFilters: "Clear Filters", loadMore: "Load More", loading: "Loading properties...", clickToView: "Click here to view", selectLanguage: "Select Language" } },
-        pt: { translation: { clearFilters: "Limpar Filtros", loadMore: "Carregar Mais", loading: "Carregando imóveis...", clickToView: "Clique para visualizar", selectLanguage: "Selecionar Idioma" } },
-        es: { translation: { clearFilters: "Borrar filtros", loadMore: "Cargar más", loading: "Cargando propiedades...", clickToView: "Haz clic para ver", selectLanguage: "Seleccionar idioma" } },
-        fr: { translation: { clearFilters: "Effacer les filtres", loadMore: "Charger plus", loading: "Chargement des propriétés...", clickToView: "Cliquez pour voir", selectLanguage: "Choisir la langue" } },
-        it: { translation: { clearFilters: "Cancella filtri", loadMore: "Carica altri", loading: "Caricamento proprietà...", clickToView: "Clicca per visualizzare", selectLanguage: "Seleziona lingua" } },
-        de: { translation: { clearFilters: "Filter löschen", loadMore: "Mehr laden", loading: "Immobilien werden geladen...", clickToView: "Klicken Sie hier, um anzuzeigen", selectLanguage: "Sprache wählen" } }
-      }
-    }, function(err, t) {
-      updateContent();
-    });
-
-    function updateContent() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        el.innerHTML = i18next.t(key);
-      });
-    }
-
-    document.getElementById("language-selector").addEventListener("change", function () {
-      const newLang = this.value;
-      i18next.changeLanguage(newLang, updateContent);
-    });
+    const langAttr = document.documentElement.lang || 'en';
+    console.log("Detected language:", langAttr);
   });
 </script>
+
 
   <!-- ======= Header/Navbar ======= -->
   <nav class="navbar navbar-default navbar-trans navbar-expand-lg fixed-top">
@@ -923,6 +879,49 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script src="/assets/js/loadProperties.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const typeSelect = document.getElementById("Type");
+    const citySelect = document.getElementById("city");
+    const bedroomsSelect = document.getElementById("bedrooms");
+    const garagesSelect = document.getElementById("garages");
+    const bathroomsSelect = document.getElementById("bathrooms");
+    const priceSelect = document.getElementById("price");
+
+    if (!typeSelect || !citySelect) return;
+
+    fetch("/data/properties.json")
+      .then(response => response.json())
+      .then(data => {
+        // Extração dinâmica de valores únicos
+        const types = [...new Set(data.map(p => p.type).filter(Boolean))];
+        const cities = [...new Set(data.map(p => p.city).filter(Boolean))];
+        const bedrooms = [...new Set(data.map(p => p.bedrooms).filter(Boolean))];
+        const garages = [...new Set(data.map(p => p.garages).filter(Boolean))];
+        const bathrooms = [...new Set(data.map(p => p.bathrooms).filter(Boolean))];
+        const prices = [...new Set(data.map(p => p.valuation).filter(Boolean))].sort((a, b) => a - b);
+
+        // Helper para preencher <select>
+        function populateSelect(select, values, defaultOption) {
+          select.innerHTML = `<option>${defaultOption}</option>`;
+          values.forEach(val => {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = typeof val === "number" ? `R$ ${val.toLocaleString('pt-BR')}` : val;
+            select.appendChild(opt);
+          });
+        }
+
+        populateSelect(typeSelect, types, "All Type");
+        populateSelect(citySelect, cities, "All City");
+        populateSelect(bedroomsSelect, bedrooms, "Any");
+        populateSelect(garagesSelect, garages, "Any");
+        populateSelect(bathroomsSelect, bathrooms, "Any");
+        populateSelect(priceSelect, prices, "Unlimite");
+      });
+  });
+</script>
 
 </body>
 
