@@ -247,6 +247,56 @@
   </div>
 </section>
 
+<script src="/assets/js/loadProperties.js"></script>
+
+
+<!-- ======= Property Grid ======= 
+<section class="property-grid grid">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="grid-option">
+          <form id="filter-form">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <input type="text" id="filter-keyword" class="form-control" placeholder="Keyword">
+              </div>
+              <div class="col-md-3">
+                <select id="filter-type" class="form-select">
+                  <option value="">All Types</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="filter-city" class="form-select">
+                  <option value="">All Cities</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="filter-state" class="form-select">
+                  <option value="">All States</option>
+                </select>
+              </div>
+              <div class="col-md-3 mt-2">
+                <button type="button" id="clear-filters" class="btn btn-secondary w-100">Clear Filters</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="properties-container">
+      <!-- Grid de propriedades será carregado aqui -->
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <nav class="pagination-a text-center mt-4">
+          <ul class="pagination justify-content-end" id="pagination"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("properties-container");
