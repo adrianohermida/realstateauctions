@@ -32,6 +32,50 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+  <style>
+    .pagination-modern {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 1rem;
+    }
+    .pagination-modern button {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+      min-width: 32px;
+    }
+    .pagination-modern button.active {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+    .pagination-modern .goto-page {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 1rem;
+    }
+    .pagination-modern .dots {
+      padding: 0 0.5rem;
+      color: #999;
+    }
+    @media (max-width: 576px) {
+      .pagination-modern .pages button,
+      .pagination-modern .dots {
+        display: none;
+      }
+      .pagination-modern .active {
+        display: inline-block;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -191,19 +235,13 @@
                 <input type="text" id="filter-keyword" class="form-control" placeholder="Keyword">
               </div>
               <div class="col-md-3">
-                <select id="filter-type" class="form-select">
-                  <option value="">All Types</option>
-                </select>
+                <select id="filter-type" class="form-select"><option value="">All Types</option></select>
               </div>
               <div class="col-md-3">
-                <select id="filter-city" class="form-select">
-                  <option value="">All Cities</option>
-                </select>
+                <select id="filter-city" class="form-select"><option value="">All Cities</option></select>
               </div>
               <div class="col-md-3">
-                <select id="filter-state" class="form-select">
-                  <option value="">All States</option>
-                </select>
+                <select id="filter-state" class="form-select"><option value="">All States</option></select>
               </div>
               <div class="col-md-3 mt-2">
                 <button type="button" id="clear-filters" class="btn btn-secondary w-100">Clear Filters</button>
@@ -213,12 +251,15 @@
         </div>
       </div>
     </div>
+
     <div class="row">
       <div id="search-summary" class="col-sm-12 mb-3"></div>
     </div>
+
     <div class="row" id="properties-container">
       <!-- Grid de propriedades será carregado aqui -->
     </div>
+
     <div class="row">
       <div class="col-sm-12">
         <nav class="pagination-a text-center mt-4">
@@ -226,35 +267,27 @@
         </nav>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <!-- Responsive Pagination Component -->
+        <nav class="pagination-modern text-center mt-4">
+          <button class="first">&laquo;</button>
+          <button class="prev">&lsaquo;</button>
+          <span class="pages"></span>
+          <button class="next">&rsaquo;</button>
+          <button class="last">&raquo;</button>
+          <div class="goto-page mt-2">
+            Page <input type="number" id="goto-page" min="1"> 
+            <button id="goto-btn">Go</button>
+          </div>
+        </nav>
+      </div>
+    </div>
   </div>
 </section>
 
-<script src="/assets/js/loadProperties.js"></script>
-<script>
-  document.documentElement.lang = navigator.language || 'en';
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const type = urlParams.get("type") || "";
-    const city = urlParams.get("city") || "";
-    const bedrooms = urlParams.get("bedrooms") || "";
-    const garages = urlParams.get("garages") || "";
-    const bathrooms = urlParams.get("bathrooms") || "";
-    const minprice = urlParams.get("minprice") || "";
-    const keyword = urlParams.get("keyword") || "";
-
-    // Aguarda o carregamento do JS principal antes de aplicar os filtros
-    window.applyInitialFilters = () => {
-      if (document.getElementById("filter-type")) {
-        document.getElementById("filter-type").value = type;
-        document.getElementById("filter-city").value = city;
-        document.getElementById("filter-keyword").value = keyword;
-      }
-    };
-  });
-</script>
 <!-- End Property Grid -->
-
 
 
 <!-- ======= Property Grid ======= 
@@ -886,6 +919,18 @@
   <script src="/assets/js/main.js"></script>
   <script src="/assets/js/populateSearchFilters.js"></script>
 
+<!-- Scripts -->
+<script src="/assets/js/loadProperties.js"></script>
+<script src="/assets/js/populateSearchFilters.js"></script>
+<script src="/assets/js/paginateProperties.js"></script>
+<script>
+  document.documentElement.lang = navigator.language || 'en';
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    window.applyInitialFilters?.(urlParams);
+  });
+</script>
 </body>
 
 </html>

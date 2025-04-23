@@ -127,6 +127,63 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   
 
+<script>
+  function renderPaginationControls(currentPage, totalPages, onPageChange) {
+    const container = document.querySelector('.pagination-modern .pages');
+    const firstBtn = document.querySelector('.pagination-modern .first');
+    const prevBtn = document.querySelector('.pagination-modern .prev');
+    const nextBtn = document.querySelector('.pagination-modern .next');
+    const lastBtn = document.querySelector('.pagination-modern .last');
+    const gotoInput = document.getElementById('goto-page');
+    const gotoBtn = document.getElementById('goto-btn');
+
+    container.innerHTML = '';
+    const pageButtons = [];
+
+    const range = (start, end) => Array.from({length: end - start + 1}, (_, i) => start + i);
+    let pagesToShow = [];
+
+    if (totalPages <= 7) {
+      pagesToShow = range(1, totalPages);
+    } else {
+      if (currentPage <= 4) {
+        pagesToShow = [...range(1, 5), '...', totalPages];
+      } else if (currentPage >= totalPages - 3) {
+        pagesToShow = [1, '...', ...range(totalPages - 4, totalPages)];
+      } else {
+        pagesToShow = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      }
+    }
+
+    pagesToShow.forEach(p => {
+      if (p === '...') {
+        const span = document.createElement('span');
+        span.className = 'dots';
+        span.textContent = '...';
+        container.appendChild(span);
+      } else {
+        const btn = document.createElement('button');
+        btn.textContent = p;
+        btn.className = (p === currentPage) ? 'active' : '';
+        btn.addEventListener('click', () => onPageChange(p));
+        container.appendChild(btn);
+      }
+    });
+
+    firstBtn.onclick = () => onPageChange(1);
+    prevBtn.onclick = () => onPageChange(Math.max(1, currentPage - 1));
+    nextBtn.onclick = () => onPageChange(Math.min(totalPages, currentPage + 1));
+    lastBtn.onclick = () => onPageChange(totalPages);
+
+    gotoBtn.onclick = () => {
+      const page = parseInt(gotoInput.value);
+      if (page >= 1 && page <= totalPages) {
+        onPageChange(page);
+      }
+    };
+  }
+</script>
+
   function applyFilters() {
     const keyword = keywordFilter.value.toLowerCase();
     const type = typeFilter.value;
