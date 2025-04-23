@@ -1,108 +1,96 @@
-
-document.addEventListener("DOMContentLoaded", function () {
+// Aguarda o carregamento completo da DOM
+window.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("properties-container");
+  const pagination = document.getElementById("pagination");
+  const summary = document.getElementById("search-summary");
   const typeFilter = document.getElementById("filter-type");
   const cityFilter = document.getElementById("filter-city");
   const stateFilter = document.getElementById("filter-state");
   const keywordFilter = document.getElementById("filter-keyword");
   const clearBtn = document.getElementById("clear-filters");
-  const pagination = document.getElementById("pagination");
 
+  const itemsPerPage = 6;
   let allProperties = [];
   let filteredProperties = [];
-  let currentPage = 0;
-  const itemsPerPage = 5;
+  let currentPage = 1;
 
   function populateFilters(data) {
-    const types = [...new Set(data.map(p => p.type).filter(Boolean).sort())];
-    const cities = [...new Set(data.map(p => p.city).filter(Boolean).sort())];
-    const states = [...new Set(data.map(p => p.state).filter(Boolean).sort())];
+    const addOptions = (select, values, defaultOption) => {
+      const unique = [...new Set(values)].filter(Boolean).sort();
+      select.innerHTML = `<option value="">${defaultOption}</option>`;
+      unique.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        select.appendChild(opt);
+      });
+    };
 
-    typeFilter.innerHTML = '<option value="">All Types</option>';
-    types.forEach(type => {
-      typeFilter.innerHTML += `<option value="\${type}">\${type}</option>`;
-    });
-
-    cityFilter.innerHTML = '<option value="">All Cities</option>';
-    cities.forEach(city => {
-      cityFilter.innerHTML += `<option value="\${city}">\${city}</option>`;
-    });
-
-    stateFilter.innerHTML = '<option value="">All States</option>';
-    states.forEach(state => {
-      stateFilter.innerHTML += `<option value="\${state}">\${state}</option>`;
-    });
+    addOptions(typeFilter, data.map(p => p.type), "All Types");
+    addOptions(cityFilter, data.map(p => p.city), "All Cities");
+    addOptions(stateFilter, data.map(p => p.state), "All States");
   }
 
-  function renderProperties(page = 0) {
+  function renderProperties() {
     container.innerHTML = "";
-    currentPage = page;
-    const start = page * itemsPerPage;
+    const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const propertiesToDisplay = filteredProperties.slice(start, end);
+    const display = filteredProperties.slice(start, end);
 
-    propertiesToDisplay.forEach(property => {
+    display.forEach(property => {
       const card = document.createElement("div");
       card.className = "col-md-4 mb-4";
-      card.innerHTML = \`
+      card.innerHTML = `
         <div class="card-box-a card-shadow">
           <div class="img-box-a">
-            <img src="\${property.image}" alt="\${property.title}" class="img-a img-fluid">
+            <img src="${property.image}" alt="${property.title}" class="img-a img-fluid">
           </div>
           <div class="card-overlay">
             <div class="card-overlay-a-content">
               <div class="card-header-a">
                 <h2 class="card-title-a">
-                  <a href="/property-single.html?id=\${property.id}">
-                    \${property.title.replace(" - ", "<br />")}
+                  <a href="/property-single.html?id=${property.id}">
+                    ${property.title.replace(" - ", "<br />")}
                   </a>
                 </h2>
               </div>
               <div class="card-body-a">
                 <div class="price-box d-flex">
-                  <span class="price-a">R$ \${property.valuation?.toLocaleString("pt-BR") || "-"}</span>
+                  <span class="price-a">R$ ${property.valuation?.toLocaleString("pt-BR") || "-"}</span>
                 </div>
-                <a href="/property-single.html?id=\${property.id}" class="link-a">
+                <a href="/property-single.html?id=${property.id}" class="link-a">
                   Click here to view <span class="bi bi-chevron-right"></span>
                 </a>
               </div>
               <div class="card-footer-a">
                 <ul class="card-info d-flex justify-content-around">
-                  <li><h4 class="card-info-title">Area</h4><span>\${property.area || "-"}<sup>2</sup></span></li>
-                  <li><h4 class="card-info-title">Beds</h4><span>\${property.bedrooms || "-"}</span></li>
-                  <li><h4 class="card-info-title">Baths</h4><span>\${property.bathrooms || "-"}</span></li>
-                  <li><h4 class="card-info-title">Garages</h4><span>\${property.garages || "-"}</span></li>
+                  <li><h4 class="card-info-title">Area</h4><span>${property.area || "-"}<sup>2</sup></span></li>
+                  <li><h4 class="card-info-title">Beds</h4><span>${property.bedrooms || "-"}</span></li>
+                  <li><h4 class="card-info-title">Baths</h4><span>${property.bathrooms || "-"}</span></li>
+                  <li><h4 class="card-info-title">Garages</h4><span>${property.garages || "-"}</span></li>
                 </ul>
               </div>
             </div>
           </div>
-        </div>\`;
+        </div>`;
       container.appendChild(card);
     });
 
     renderPagination();
   }
 
-  
-function renderPagination() {
-  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-  pagination.innerHTML = "";
-  for (let i = 0; i < totalPages; i++) {
-    const li = document.createElement("li");
-    li.className = `page-item ${i === currentPage ? "active" : ""}`;
-    li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
-    li.addEventListener("click", e => {
-      e.preventDefault();
-      renderProperties(i);
-    });
-    pagination.appendChild(li);
-  }
-}
-\`;
-      li.innerHTML = \`<a class="page-link" href="#">\${i}</a>\`;
+  function renderPagination() {
+    const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? "active" : ""}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
       li.addEventListener("click", e => {
         e.preventDefault();
-        renderProperties(i - 1);
+        currentPage = i;
+        renderProperties();
       });
       pagination.appendChild(li);
     }
@@ -125,17 +113,17 @@ function renderPagination() {
              (!state || p.state === state) &&
              matchKeyword;
     });
+
+    currentPage = 1;
   }
 
   function applyFilters() {
     filterProperties();
-    renderProperties(0);
+    renderProperties();
   }
 
-  clearBtn?.addEventListener("click", () => {
-    typeFilter.value = "";
-    cityFilter.value = "";
-    stateFilter.value = "";
+  clearBtn.addEventListener("click", () => {
+    [typeFilter, cityFilter, stateFilter].forEach(el => el.value = "");
     keywordFilter.value = "";
     applyFilters();
   });
@@ -146,9 +134,8 @@ function renderPagination() {
       allProperties = data;
       populateFilters(data);
       applyFilters();
-      typeFilter.addEventListener("change", applyFilters);
-      cityFilter.addEventListener("change", applyFilters);
-      stateFilter.addEventListener("change", applyFilters);
+
+      [typeFilter, cityFilter, stateFilter].forEach(el => el.addEventListener("change", applyFilters));
       keywordFilter.addEventListener("input", applyFilters);
     });
 });
