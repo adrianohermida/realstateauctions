@@ -85,22 +85,47 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderPagination() {
-    pagination.innerHTML = "";
     const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-
-    for (let i = 1; i <= totalPages; i++) {
+    pagination.innerHTML = "";
+  
+    const createPageItem = (page, label = page, active = false, disabled = false) => {
       const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? "active" : ""}`;
-      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-      li.addEventListener("click", e => {
-        e.preventDefault();
-        currentPage = i;
-        renderProperties();
-        renderPagination();
-      });
-      pagination.appendChild(li);
+      li.className = `page-item ${active ? "active" : ""} ${disabled ? "disabled" : ""}`;
+      li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+      if (!disabled) {
+        li.addEventListener("click", e => {
+          e.preventDefault();
+          renderProperties(page);
+        });
+      }
+      return li;
+    };
+  
+    // Botão «
+    pagination.appendChild(createPageItem(currentPage - 1, "«", false, currentPage === 0));
+  
+    const visibleRange = 2;
+    const start = Math.max(0, currentPage - visibleRange);
+    const end = Math.min(totalPages, currentPage + visibleRange + 1);
+  
+    if (start > 0) {
+      pagination.appendChild(createPageItem(0, "1"));
+      if (start > 1) pagination.appendChild(createPageItem(null, "...", false, true));
     }
+  
+    for (let i = start; i < end; i++) {
+      pagination.appendChild(createPageItem(i, i + 1, i === currentPage));
+    }
+  
+    if (end < totalPages) {
+      if (end < totalPages - 1) pagination.appendChild(createPageItem(null, "...", false, true));
+      pagination.appendChild(createPageItem(totalPages - 1, totalPages));
+    }
+  
+    // Botão »
+    pagination.appendChild(createPageItem(currentPage + 1, "»", false, currentPage >= totalPages - 1));
   }
+  
 
   function applyFilters() {
     const keyword = keywordFilter.value.toLowerCase();
