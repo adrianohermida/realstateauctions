@@ -1,54 +1,43 @@
+
 // searchPropertyAdjustments.js
-document.addEventListener("DOMContentLoaded", async () => {
-    const form = document.getElementById("search-form");
-    const keywordInput = document.getElementById("keyword");
-    const typeSelect = document.getElementById("type");
-    const citySelect = document.getElementById("city");
-    const bedroomsSelect = document.getElementById("bedrooms");
-    const garagesSelect = document.getElementById("garages");
-    const bathroomsSelect = document.getElementById("bathrooms");
-    const minPriceSelect = document.getElementById("minprice");
-  
-    if (!form) return;
-  
-    async function loadPropertiesData() {
-      const folderPath = "/data/";
-      const jsonList = [
-        "property_1_to_50.json",
-        "property_51_to_100.json",
-        "property_101_to_150.json",
-        "property_151_to_200.json"
-      ];
-  
-      const requests = jsonList.map(file => fetch(`${folderPath}${file}`).then(r => r.json()));
-      const results = await Promise.all(requests);
-      return results.flat();
-    }
-  
-    function populateSelect(select, values, placeholder, isCurrency = false) {
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-      values.forEach(val => {
-        const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = isCurrency ? `R$ ${parseFloat(val).toLocaleString("pt-BR")}` : val;
-        select.appendChild(opt);
-      });
-    }
-  
-    const properties = await loadPropertiesData();
-  
-    const types = [...new Set(properties.map(p => p.type).filter(Boolean))].sort();
-    const cities = [...new Set(properties.map(p => p.city).filter(Boolean))].sort();
-    const bedrooms = [...new Set(properties.map(p => p.bedrooms).filter(Boolean))].sort((a, b) => a - b);
-    const garages = [...new Set(properties.map(p => p.garages).filter(Boolean))].sort((a, b) => a - b);
-    const bathrooms = [...new Set(properties.map(p => p.bathrooms).filter(Boolean))].sort((a, b) => a - b);
-    const prices = [...new Set(properties.map(p => p.minimumBid).filter(v => typeof v === "number"))].sort((a, b) => a - b);
-  
-    populateSelect(typeSelect, types, "All Types");
-    populateSelect(citySelect, cities, "All Cities");
-    populateSelect(bedroomsSelect, bedrooms, "Any");
-    populateSelect(garagesSelect, garages, "Any");
-    populateSelect(bathroomsSelect, bathrooms, "Any");
-    populateSelect(minPriceSelect, prices, "Unlimite", true);
-  });
-  
+document.addEventListener("DOMContentLoaded", () => {
+  const typeField = document.querySelector('#type');
+  const cityField = document.querySelector('#city');
+  const bedroomsField = document.querySelector('#bedrooms');
+  const garagesField = document.querySelector('#garages');
+  const bathroomsField = document.querySelector('#bathrooms');
+  const minpriceField = document.querySelector('#minprice');
+
+  if (!typeField || !cityField) return;
+
+  const uniqueValues = (data, key) =>
+    [...new Set(data.map(item => item[key]).filter(v => v !== null && v !== undefined && v !== ""))];
+
+  fetch('/data/properties.json')
+    .then(res => res.json())
+    .then(data => {
+      const types = uniqueValues(data, "type");
+      const cities = uniqueValues(data, "city");
+      const bedrooms = uniqueValues(data, "bedrooms");
+      const garages = uniqueValues(data, "garages");
+      const bathrooms = uniqueValues(data, "bathrooms");
+      const prices = uniqueValues(data, "minimumBid").filter(p => typeof p === "number").sort((a, b) => a - b);
+
+      const populate = (select, values, label, isCurrency = false) => {
+        select.innerHTML = `<option value="">${label}</option>`;
+        values.forEach(value => {
+          const opt = document.createElement("option");
+          opt.value = value;
+          opt.textContent = isCurrency ? `R$ ${value.toLocaleString('pt-BR')}` : value;
+          select.appendChild(opt);
+        });
+      };
+
+      populate(typeField, types, "All Type");
+      populate(cityField, cities, "All City");
+      if (bedroomsField) populate(bedroomsField, bedrooms, "Any");
+      if (garagesField) populate(garagesField, garages, "Any");
+      if (bathroomsField) populate(bathroomsField, bathrooms, "Any");
+      if (minpriceField) populate(minpriceField, prices, "Unlimite", true);
+    });
+});
